@@ -1,0 +1,35 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\DataAccess\DataAccess.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="DTOs\Choice\" />
+    <Folder Include="DTOs\CourseAssignment\" />
+    <Folder Include="DTOs\ExamQuestion\" />
+    <Folder Include="DTOs\StudentExam\" />
+    <Folder Include="DTOs\StudentAnswer\" />
+    <Folder Include="DTOs\Question\" />
+    <Folder Include="VeiwModels\Choice\" />
+    <Folder Include="VeiwModels\CourseAssignment\" />
+    <Folder Include="VeiwModels\ExamQuestion\" />
+    <Folder Include="VeiwModels\Question\" />
+    <Folder Include="VeiwModels\StudentAnswer\" />
+    <Folder Include="VeiwModels\StudentExam\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="AutoMapper" Version="12.0.1" />
+    <PackageReference Include="Microsoft.AspNetCore.Identity" Version="2.3.1" />
+    <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="9.0.10" />
+    <PackageReference Include="Microsoft.AspNetCore.Identity.UI" Version="9.0.10" />
+  </ItemGroup>
+
+</Project>
