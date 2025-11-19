@@ -37,11 +37,17 @@ namespace Quiz_System
             builder.Services.AddScoped(typeof(IGeneralRepository<>), typeof(GeneralRepository<>));
             builder.Services.AddScoped<ICourseRepository, CourseRepository>();
             builder.Services.AddScoped<IExamRepository, ExamRepository>();
+            builder.Services.AddScoped<IChoiceRepository, ChoiceRepository>();
+            builder.Services.AddScoped<IQuestionRepository, QuestionRepository>();
+
             builder.Services.AddScoped<ExamService>();
             builder.Services.AddScoped<CourseService>();
             builder.Services.AddScoped<AuthService>();
             builder.Services.AddScoped<UserRepository>();
             builder.Services.AddScoped<JwtTokenService>();
+            builder.Services.AddScoped<ChoiceService>();
+            builder.Services.AddScoped<QuestionService>();
+
 
 
 
@@ -53,7 +59,7 @@ namespace Quiz_System
                 options.Password.RequireNonAlphanumeric = false;
             })
              .AddEntityFrameworkStores<QuizSystemContext>()
-             .AddSignInManager<SignInManager<ApplicationUser>>()   // ★ المهم جداً
+             .AddSignInManager<SignInManager<ApplicationUser>>()   
              .AddDefaultTokenProviders();
 
             var jwt = builder.Configuration.GetSection("Jwt");

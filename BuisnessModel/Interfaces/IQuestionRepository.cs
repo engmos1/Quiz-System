@@ -3,7 +3,7 @@
 
 namespace BuisnessModel.Interfaces
 {
-    internal interface IQuestionRepository : IGeneralRepository<Question>
+    public interface IQuestionRepository : IGeneralRepository<Question>
     {
     }
 }

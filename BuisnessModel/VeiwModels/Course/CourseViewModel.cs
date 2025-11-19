@@ -11,6 +11,5 @@ namespace BuisnessModel.VeiwModels.Course
         public int Hours { get; set; }
 
         public string InstructorId { get; set; }
-        public string InstructorName { get; set; }
     }
 }

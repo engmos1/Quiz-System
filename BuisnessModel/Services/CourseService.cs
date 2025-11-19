@@ -91,8 +91,27 @@ namespace BuisnessModel.Services
             if (!isInstructor)
                 return false;
 
+            // عمل entity عادي من الـ DTO
             var entity = _mapper.Map<Course>(dto);
-            _courseRepo.Update(entity);
+
+            // تحديد الخصائص اللي اتعدلت
+            var modifiedFields = new List<string>();
+
+            if (existing.Name != dto.Name)
+                modifiedFields.Add(nameof(Course.Name));
+
+            if (existing.Hours != dto.Hours)
+                modifiedFields.Add(nameof(Course.Hours));
+
+            if (existing.InstructorId != dto.InstructorId)
+                modifiedFields.Add(nameof(Course.InstructorId));
+
+            // لو مفيش حاجة اتغيرت يبقى خلاص
+            if (modifiedFields.Count == 0)
+                return true;
+
+            // استدعاء الميثود اللي عندك في الريبو
+            _courseRepo.UpdateInclude(entity, modifiedFields.ToArray());
 
             return true;
         }

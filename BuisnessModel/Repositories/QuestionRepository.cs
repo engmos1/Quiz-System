@@ -1,10 +1,11 @@
-﻿using DataAccess.Context;
+﻿using BuisnessModel.Interfaces;
+using DataAccess.Context;
 using DataAccess.Models;
 using ExaminationSystem.Repositories;
 
 namespace BuisnessModel.Repositories
 {
-    internal class QuestionRepository : GeneralRepository<Question>
+    public class QuestionRepository : GeneralRepository<Question>, IQuestionRepository
     {
         public QuestionRepository(QuizSystemContext context) : base(context)
         {

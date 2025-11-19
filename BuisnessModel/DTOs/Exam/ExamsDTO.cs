@@ -11,12 +11,14 @@ namespace BuisnessModel.DTOs.Exam
         public int ID { get; set; }
         public string Name { get; set; }
 
-        public string CourseName { get; set; }
+        public int CourseId { get; set; }
 
         public ExamType Type { get; set; }
 
         public int NumberOfQuestions { get; set; }
 
-        public string CreatedByInstructorName { get; set; }
+        public string InctractorId { get; set; }
+
+
     }
 }

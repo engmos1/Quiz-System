@@ -25,7 +25,7 @@ namespace ExaminationSystem.Repositories
         }
         public async Task<T> GetByID(int id)
         {
-            var res = await _dbSet.Where(c => c.ID == id).FirstOrDefaultAsync();
+            var res = await _dbSet.Where(c => c.ID == id && !c.IsDeleted).FirstOrDefaultAsync();
             return res;
         }
         public async Task<T> GetByIDWithTracking(int id)
@@ -78,6 +78,10 @@ namespace ExaminationSystem.Repositories
             _context.SaveChanges();
         }
 
+        public Task<bool> IsExist(int id)
+        {
+            return _dbSet.AnyAsync(c => c.ID == id);
+        }
     }
 }
 

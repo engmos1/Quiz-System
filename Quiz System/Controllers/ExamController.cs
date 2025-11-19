@@ -47,7 +47,7 @@ public class ExamController : ControllerBase
     [HttpPost]
     public async Task<ResponseViewModel<bool>> AddExam(AddExamsVeiwModels vm)
     {
-        var dto = _mapper.Map<ExamsDTO>(vm);
+        var dto = _mapper.Map<AddExamDto>(vm);
 
         var success = await _service.AddExam(dto);
 
@@ -59,9 +59,9 @@ public class ExamController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<ResponseViewModel<bool>> UpdateExam(AddExamsVeiwModels vm)
+    public async Task<ResponseViewModel<bool>> UpdateExam(UpdateExamsVeiwModels vm)
     {
-        var dto = _mapper.Map<ExamsDTO>(vm);
+        var dto = _mapper.Map<UpdateExamsDto>(vm);
 
         var success = await _service.UpdateExam(dto);
 

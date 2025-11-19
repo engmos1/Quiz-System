@@ -3,7 +3,9 @@
 
 namespace BuisnessModel.Interfaces
 {
-    internal interface IChoiceRepository : IGeneralRepository<Choice>
+    public interface IChoiceRepository : IGeneralRepository<Choice>
     {
+        IQueryable<Choice> GetAllByQuestionId(int questionId);
+
     }
 }

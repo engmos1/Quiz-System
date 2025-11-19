@@ -14,8 +14,15 @@ namespace BuisnessModel.Mapping
             CreateMap<Exam, AllExamsDTO>()
                 .ForMember(dest => dest.CourseName, opt => opt.MapFrom(src => src.Course.Name))
                 .ForMember(dest => dest.CreatedByInstructorName, opt => opt.MapFrom(src => src.CreatedByInstructor.FullName));
-            CreateMap<Exam, ExamsDTO>().ForMember(dest => dest.CourseName, opt => opt.MapFrom(src => src.Course.Name))
-                .ForMember(dest => dest.CreatedByInstructorName, opt => opt.MapFrom(src => src.CreatedByInstructor.FullName)).ReverseMap();
+            CreateMap<Exam, ExamsDTO>().ForMember(dest => dest.CourseId, opt => opt.MapFrom(src => src.Course.ID))
+                .ForMember(dest => dest.InctractorId , opt => opt.MapFrom(src=>src.CreatedByInstructorId))
+                .ReverseMap();
+            CreateMap<Exam, AddExamDto>()
+                .ForMember(dest=> dest.InctractorId,opt=> opt.MapFrom(src=>src.CreatedByInstructorId)).ReverseMap();
+            CreateMap<Exam, UpdateExamsDto>()
+                .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.ID))
+                .ForMember(dest => dest.InctractorId, opt => opt.MapFrom(src => src.CreatedByInstructorId)).ReverseMap();
+
 
 
 
@@ -23,7 +30,8 @@ namespace BuisnessModel.Mapping
             // For Veiw Models
             CreateMap< AllExamsDTO , AllExamsVeiwModels>().ReverseMap();
             CreateMap<ExamsDTO , ExamsVeiwModels>().ReverseMap();
-            CreateMap<ExamsDTO, AddExamsVeiwModels>().ReverseMap();
+            CreateMap<AddExamDto, AddExamsVeiwModels>().ReverseMap();
+            CreateMap<UpdateExamsDto, UpdateExamsVeiwModels>().ReverseMap();
         }
     }
 }
