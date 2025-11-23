@@ -4,24 +4,24 @@ using BuisnessModel.Mapping;
 using BuisnessModel.Repositories;
 using BuisnessModel.Services;
 using BuisnessModel.Services.Auth;
+using BuisnessModel.Services.JobsService;
 using DataAccess.Context;
 using DataAccess.Identity;
 using DataAccess.Seed;
 using ExaminationSystem.Repositories;
+using Hangfire;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Cors.Infrastructure;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
-using System;
 using System.Diagnostics;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace Quiz_System
 {
     public class Program
     {
+        [Obsolete]
         public static async Task Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
@@ -39,6 +39,8 @@ namespace Quiz_System
             builder.Services.AddScoped<IExamRepository, ExamRepository>();
             builder.Services.AddScoped<IChoiceRepository, ChoiceRepository>();
             builder.Services.AddScoped<IQuestionRepository, QuestionRepository>();
+            builder.Services.AddScoped<ICourseAssignmentRepository , CourseAssignmentRepository>();
+            builder.Services.AddScoped<IExamQuestionRepository, ExamQuestionRepository>();
 
             builder.Services.AddScoped<ExamService>();
             builder.Services.AddScoped<CourseService>();
@@ -47,6 +49,8 @@ namespace Quiz_System
             builder.Services.AddScoped<JwtTokenService>();
             builder.Services.AddScoped<ChoiceService>();
             builder.Services.AddScoped<QuestionService>();
+            builder.Services.AddScoped<CourseAssignmentService>();
+            builder.Services.AddScoped<ExamQuestionService>();
 
 
 
@@ -109,13 +113,49 @@ namespace Quiz_System
                 });
             });
 
+            builder.Services.AddMemoryCache();
+            builder.Services.AddStackExchangeRedisCache(options =>
+            {
+                options.Configuration = "redis-19151.c15.us-east-1-2.ec2.cloud.redislabs.com:19151, Password=O4hGPDNFTY5lI2BcQnxfCTXW7tHzAN9i";
+                options.InstanceName = "QuizSystem";
+            });
+
+            builder.Services.AddHangfire(configuration => configuration
+    .SetDataCompatibilityLevel(CompatibilityLevel.Version_170)
+    .UseSimpleAssemblyNameTypeSerializer()
+    .UseRecommendedSerializerSettings()
+    .UseSqlServerStorage(builder.Configuration.GetConnectionString("DefaultConnection"), new Hangfire.SqlServer.SqlServerStorageOptions
+    {
+        CommandBatchMaxTimeout = TimeSpan.FromMinutes(5),
+        SlidingInvisibilityTimeout = TimeSpan.FromMinutes(5),
+        QueuePollInterval = TimeSpan.Zero,
+        UseRecommendedIsolationLevel = true,
+        DisableGlobalLocks = true
+    }));
+
+            builder.Services.AddHangfireServer();
+
+            // Register your jobs service for DI
+            builder.Services.AddScoped<CourseJobsService>();
+
             var app = builder.Build();
+
+
             using (var scope = app.Services.CreateScope())
             {
+                var jobManager = scope.ServiceProvider.GetRequiredService<IRecurringJobManager>();
+
+                jobManager.AddOrUpdate<CourseJobsService>(
+                    "RefreshCoursesCache",
+                    job => job.RefreshCoursesCache(),
+                    "*/30 * * * *"
+                );
+
                 var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
-               await RoleSeeder.SeedRoles(roleManager);
+                await RoleSeeder.SeedRoles(roleManager);
             }
 
+                app.UseHangfireDashboard("/hangfire");
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
             {

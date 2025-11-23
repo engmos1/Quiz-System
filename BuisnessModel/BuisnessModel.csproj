@@ -12,11 +12,9 @@
 
   <ItemGroup>
     <Folder Include="DTOs\CourseAssignment\" />
-    <Folder Include="DTOs\ExamQuestion\" />
     <Folder Include="DTOs\StudentExam\" />
     <Folder Include="DTOs\StudentAnswer\" />
     <Folder Include="VeiwModels\CourseAssignment\" />
-    <Folder Include="VeiwModels\ExamQuestion\" />
     <Folder Include="VeiwModels\StudentAnswer\" />
     <Folder Include="VeiwModels\StudentExam\" />
   </ItemGroup>

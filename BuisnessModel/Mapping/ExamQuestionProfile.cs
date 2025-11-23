@@ -1,7 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using AutoMapper;
+﻿using AutoMapper;
+using BuisnessModel.DTOs.ExamQuestion;
+using BuisnessModel.VeiwModels.ExamQuestion;
+using DataAccess.Models;
+
 
 namespace BuisnessModel.Mapping
 {
@@ -10,6 +11,10 @@ namespace BuisnessModel.Mapping
         public ExamQuestionProfile()
         {
             // CreateMap<Source, Destination>();
+            CreateMap<ExamQuestion, AllExamQuestionDto>();
+                //.ForMember(dest => dest.QuestionsDto, opt => opt.MapFrom(src => src.Question));
+
+            CreateMap<AllExamQuestionDto, AllExamQuestionVeiwModel>();
         }
     }
 }

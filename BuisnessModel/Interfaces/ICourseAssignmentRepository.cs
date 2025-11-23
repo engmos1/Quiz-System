@@ -3,7 +3,10 @@ using DataAccess.Models;
 
 namespace BuisnessModel.Interfaces
 {
-    internal interface ICourseAssignmentRepository : IGeneralRepository<CourseAssignment>
+    public interface ICourseAssignmentRepository : IGeneralRepository<CourseAssignment>
     {
+        CourseAssignment GetByCourseAndStudent(int courseId, string studentId);
+
+       Task<(bool IsSuccess, string ErrorMessage)> ValidateCourseAssignment(int courseId, string studentId);
     }
 }

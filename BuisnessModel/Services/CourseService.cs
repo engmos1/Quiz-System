@@ -12,12 +12,12 @@ namespace BuisnessModel.Services
     {
         private readonly IMapper _mapper;
         private readonly ICourseRepository _courseRepo;
-        private readonly UserManager<ApplicationUser> _userManager;
+        private readonly UserManager<DataAccess.Identity.ApplicationUser> _userManager;
 
         public CourseService(
             IMapper mapper,
             ICourseRepository courseRepo,
-            UserManager<ApplicationUser> userManager)
+            UserManager<DataAccess.Identity.ApplicationUser> userManager)
         {
             _mapper = mapper;
             _courseRepo = courseRepo;
