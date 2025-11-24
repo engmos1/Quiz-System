@@ -19,5 +19,10 @@ namespace BuisnessModel.Repositories
             var res = _context.Choices.Where(x => !x.IsDeleted && x.QuestionId == questionId);
             return res;
         }
+        public async Task<Choice?> GetCorrectChoiceForQuestionAsync(int questionId)
+        {
+            return await _context.Choices
+                .FirstOrDefaultAsync(c => c.QuestionId == questionId && c.IsCorrect && !c.IsDeleted);
+        }
     }
 }

@@ -13,9 +13,7 @@
   <ItemGroup>
     <Folder Include="DTOs\CourseAssignment\" />
     <Folder Include="DTOs\StudentExam\" />
-    <Folder Include="DTOs\StudentAnswer\" />
     <Folder Include="VeiwModels\CourseAssignment\" />
-    <Folder Include="VeiwModels\StudentAnswer\" />
     <Folder Include="VeiwModels\StudentExam\" />
   </ItemGroup>
 

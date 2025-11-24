@@ -1,4 +1,3 @@
-
 using BuisnessModel.Interfaces;
 using BuisnessModel.Mapping;
 using BuisnessModel.Repositories;
@@ -41,6 +40,8 @@ namespace Quiz_System
             builder.Services.AddScoped<IQuestionRepository, QuestionRepository>();
             builder.Services.AddScoped<ICourseAssignmentRepository , CourseAssignmentRepository>();
             builder.Services.AddScoped<IExamQuestionRepository, ExamQuestionRepository>();
+            builder.Services.AddScoped<IStudentExamRepository, StudentExamRepository>();
+            builder.Services.AddScoped<IStudentAnswerRepository, StudentAnswerRepository>();
 
             builder.Services.AddScoped<ExamService>();
             builder.Services.AddScoped<CourseService>();
@@ -51,10 +52,8 @@ namespace Quiz_System
             builder.Services.AddScoped<QuestionService>();
             builder.Services.AddScoped<CourseAssignmentService>();
             builder.Services.AddScoped<ExamQuestionService>();
-
-
-
-
+            builder.Services.AddScoped<StudentExamService>();
+            builder.Services.AddScoped<StudentAnswerService>();
 
             builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
             {
@@ -87,10 +86,7 @@ namespace Quiz_System
                 };
             });
 
-            // Add services to the container.
-
             builder.Services.AddControllers();
-            // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
             builder.Services.AddOpenApi();
             builder.Services.AddAutoMapper(typeof(CourseProfile).Assembly);
             builder.Services.AddAutoMapper(typeof(ExamProfile).Assembly);
@@ -100,8 +96,6 @@ namespace Quiz_System
             builder.Services.AddAutoMapper(typeof(ExamQuestionProfile).Assembly);
             builder.Services.AddAutoMapper(typeof(StudentAnswerProfile).Assembly);
             builder.Services.AddAutoMapper(typeof(StudentExamProfile).Assembly);
-
-
 
             builder.Services.AddCors(options =>
             {
@@ -135,28 +129,51 @@ namespace Quiz_System
 
             builder.Services.AddHangfireServer();
 
-            // Register your jobs service for DI
+            // Register jobs services for DI
             builder.Services.AddScoped<CourseJobsService>();
+            builder.Services.AddScoped<ExamJobsService>();
+            builder.Services.AddScoped<QuestionJobsService>();
+            builder.Services.AddScoped<ExamQuestionJobsService>();
+            builder.Services.AddScoped<StudentExamJobsService>();
 
             var app = builder.Build();
-
 
             using (var scope = app.Services.CreateScope())
             {
                 var jobManager = scope.ServiceProvider.GetRequiredService<IRecurringJobManager>();
 
+                // Refresh caches every 30 minutes
                 jobManager.AddOrUpdate<CourseJobsService>(
                     "RefreshCoursesCache",
                     job => job.RefreshCoursesCache(),
                     "*/30 * * * *"
                 );
 
+                jobManager.AddOrUpdate<ExamJobsService>(
+                    "RefreshExamsCache",
+                    job => job.RefreshExamsCache(),
+                    "*/30 * * * *"
+                );
+
+                jobManager.AddOrUpdate<QuestionJobsService>(
+                    "RefreshQuestionsCache",
+                    job => job.RefreshQuestionsCache(),
+                    "*/30 * * * *"
+                );
+
+                // Auto-complete expired exams every 5 minutes
+                jobManager.AddOrUpdate<StudentExamJobsService>(
+                    "AutoCompleteExpiredExams",
+                    job => job.AutoCompleteExpiredExams(),
+                    "*/5 * * * *"
+                );
+
                 var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
                 await RoleSeeder.SeedRoles(roleManager);
             }
 
-                app.UseHangfireDashboard("/hangfire");
-            // Configure the HTTP request pipeline.
+            app.UseHangfireDashboard("/hangfire");
+
             if (app.Environment.IsDevelopment())
             {
                 app.MapOpenApi();
@@ -173,7 +190,6 @@ namespace Quiz_System
             app.UseAuthentication();
 
             app.UseAuthorization();
-
 
             app.MapControllers();
 

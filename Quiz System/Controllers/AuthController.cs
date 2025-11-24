@@ -6,6 +6,7 @@ using DataAccess.Models.Enums;
 using ExaminationSystem.Attributes;
 using ExaminationSystem.Models;
 using ExaminationSystem.ViewModels;
+using Hangfire;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Caching.Memory;
@@ -21,7 +22,6 @@ namespace ExaminationSystem.Controllers
         private readonly IMapper _mapper;
         private readonly IMemoryCache _memoryCache;
         private readonly IDistributedCache _distributedCache;
-
 
         public AuthController(AuthService authService, IMapper mapper, IMemoryCache memoryCache, IDistributedCache distributedCache)
         {
@@ -72,6 +72,7 @@ namespace ExaminationSystem.Controllers
 
             return ResponseViewModel<ProfileViewModel>.Success(_mapper.Map<ProfileViewModel>(profile));
         }
+
         [HttpGet]
         [Benchmark]
         public async Task<ResponseViewModel<ProfileViewModel>> ProfileCache(string userId)
@@ -89,7 +90,6 @@ namespace ExaminationSystem.Controllers
             return ResponseViewModel<ProfileViewModel>.Success(_mapper.Map<ProfileViewModel>(profile));
         }
 
-
         [HttpGet]
         [Benchmark]
         public async Task<ResponseViewModel<ProfileViewModel>> ProfileRedis(string userId)
@@ -97,7 +97,6 @@ namespace ExaminationSystem.Controllers
             var cacheKey = $"profile_{userId}";
             ProfileDTO profile;
 
-            // Try get from Redis
             var cachedData = await _distributedCache.GetStringAsync(cacheKey);
 
             if (cachedData != null)
@@ -125,6 +124,7 @@ namespace ExaminationSystem.Controllers
 
             return ResponseViewModel<ProfileViewModel>.Success(_mapper.Map<ProfileViewModel>(profile));
         }
+
         [HttpPost]
         public async Task<ResponseViewModel<bool>> UpdateProfile(ProfileViewModel vm)
         {
@@ -134,6 +134,10 @@ namespace ExaminationSystem.Controllers
 
             if (!success)
                 return ResponseViewModel<bool>.Failure("Update failed", ErrorCode.ValidationFailed);
+
+            // Invalidate user cache
+            _memoryCache.Remove($"profile_{dto.Id}");
+            BackgroundJob.Enqueue(() => _distributedCache.RemoveAsync($"profile_{dto.Id}"));
 
             return ResponseViewModel<bool>.Success(true);
         }
