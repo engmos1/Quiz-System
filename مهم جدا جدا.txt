@@ -1,1 +1,0 @@
-I used cache, Redis, and Benchmark in AuthController and CourseController.
